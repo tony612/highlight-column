@@ -1,5 +1,9 @@
-# highlight-column package
+# Highlight-column
 
-A short description of your package.
+Highlight column the cursor is at.
 
-![A screenshot of your spankin' package](https://f.cloud.github.com/assets/69169/2290250/c35d867a-a017-11e3-86be-cd7c5bf3ff9b.gif)
+![Screenshot with dark theme](https://f.cloud.github.com/assets/1253659/2365736/b60c9b90-a6da-11e3-8081-fc8753783435.png)
+
+And for light theme
+
+![Screenshot with dark theme](https://f.cloud.github.com/assets/1253659/2365739/f9c3c746-a6da-11e3-95aa-2590d855cd8f.png)
