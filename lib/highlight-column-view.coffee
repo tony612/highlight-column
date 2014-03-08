@@ -1,24 +1,29 @@
-{View} = require 'atom'
+{$, View} = require 'atom'
 
 module.exports =
 class HighlightColumnView extends View
+  @activate: ->
+    atom.workspaceView.eachEditorView (editorView) ->
+      if editorView.attached and editorView.getPane()
+        editorView.underlayer.append(new HighlightColumnView(editorView))
+
   @content: ->
-    @div class: 'highlight-column overlay from-top', =>
-      @div "The HighlightColumn package is Alive! It's ALIVE!", class: "message"
+    @div class: 'highlight-column'
 
-  initialize: (serializeState) ->
-    atom.workspaceView.command "highlight-column:toggle", => @toggle()
+  initialize: (@editorView) ->
+    @subscribe @editorView, 'cursor:moved', => @updateHighlight()
 
-  # Returns an object that can be retrieved when package is activated
-  serialize: ->
+    @updateHighlight()
 
-  # Tear down any state and detach
-  destroy: ->
-    @detach()
+  cursorScreenColumn: ->
+    @editorView.getCursorView().getScreenPosition().column
 
-  toggle: ->
-    console.log "HighlightColumnView was toggled!"
-    if @hasParent()
-      @detach()
-    else
-      atom.workspaceView.append(this)
+  highlightWidth: ->
+    @editorView.charWidth
+
+  cursorScreenLeft: ->
+    @cursorScreenColumn() * @highlightWidth()
+
+  updateHighlight: ->
+    @css('width', @highlightWidth())
+    @css('left', @cursorScreenLeft()).show()
