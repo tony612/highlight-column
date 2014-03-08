@@ -2,8 +2,8 @@
   "name": "highlight-column",
   "main": "./lib/highlight-column-view",
   "version": "0.0.0",
-  "description": "A short description of your package",
-  "repository": "https://github.com/atom/highlight-column",
+  "description": "Highlight column the cursor is at",
+  "repository": "https://github.com/tony612/highlight-column",
   "license": "MIT",
   "engines": {
     "atom": ">0.50.0"
