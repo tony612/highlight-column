@@ -1,9 +1,8 @@
 {
   "name": "highlight-column",
-  "main": "./lib/highlight-column",
+  "main": "./lib/highlight-column-view",
   "version": "0.0.0",
   "description": "A short description of your package",
-  "activationEvents": ["highlight-column:toggle"],
   "repository": "https://github.com/atom/highlight-column",
   "license": "MIT",
   "engines": {
