@@ -19,6 +19,10 @@ describe "HighlightColumnView", ->
       hlColumn = atom.workspaceView.find('.highlight-column').view()
       editorView.trigger 'resize'
 
+  describe "defaultConfigs", ->
+    it "set default opacity to 0.15", ->
+      expect(atom.config.get('highlight-column.opacity')).toBe 0.15
+
   describe "@initialize", ->
     it "appends self to each editorView's underlayer", ->
       expect(atom.workspaceView.panes.find('.pane').length).toBe 1
@@ -51,3 +55,6 @@ describe "HighlightColumnView", ->
       editorView.trigger("cursor:moved")
       expect(hlColumn.width()).toBe(20)
       expect(hlColumn.position().left).toBe(260)
+    it "change opacity when the config changes", ->
+      atom.config.set('highlight-column.opacity', 0.3)
+      expect(hlColumn.css('opacity')).toBeCloseTo(0.3, 2)
