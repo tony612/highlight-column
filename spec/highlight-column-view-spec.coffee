@@ -31,30 +31,22 @@ describe "HighlightColumnView", ->
       expect(atom.workspaceView.find('.pane').length).toBe 2
       expect(atom.workspaceView.panes.find('.underlayer > .highlight-column').length).toBe 2
 
-  describe "@cursorScreenColumn", ->
-    it "returns cursor's screen column", ->
-      expect(hlColumn.cursorScreenColumn()).toBe(0)
-      editor.setText("12345")
-      editor.setCursorScreenPosition([0, 3])
-      expect(hlColumn.cursorScreenColumn()).toBe(3)
-
   describe "@highlightWidth", ->
     it "equles char width", ->
       expect(hlColumn.highlightWidth()).toBe(editorView.charWidth)
 
   describe "@cursorScreenLeft", ->
     it "calculates cursor's left positoin", ->
-      spyOn(hlColumn, "cursorScreenColumn").andReturn(13)
-      spyOn(hlColumn, "highlightWidth").andReturn(20)
-      expect(hlColumn.cursorScreenLeft()).toBe(260)
+      spyOn(editorView.getCursorView(), "css").andReturn(32)
+      expect(hlColumn.cursorScreenLeft()).toBe(32)
 
   describe "@updateHighlight", ->
     it "positions the highlight at the configured column", ->
-      spyOn(hlColumn, "cursorScreenColumn").andReturn(13)
-      spyOn(hlColumn, "highlightWidth").andReturn(20)
+      spyOn(hlColumn, "highlightWidth").andReturn(16)
+      spyOn(hlColumn, "cursorScreenLeft").andReturn(32)
       editorView.trigger("cursor:moved")
-      expect(hlColumn.width()).toBe(20)
-      expect(hlColumn.position().left).toBe(260)
+      expect(hlColumn.width()).toBe(16)
+      expect(hlColumn.position().left).toBe(32)
     it "change opacity when the config changes", ->
       atom.config.set('highlight-column.opacity', 0.3)
       expect(hlColumn.css('opacity')).toBeCloseTo(0.3, 2)

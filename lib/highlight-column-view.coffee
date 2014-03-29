@@ -21,14 +21,11 @@ class HighlightColumnView extends View
 
     @updateHighlight()
 
-  cursorScreenColumn: ->
-    @editorView.getCursorView().getScreenPosition().column
-
   highlightWidth: ->
     @editorView.charWidth
 
   cursorScreenLeft: ->
-    @cursorScreenColumn() * @highlightWidth()
+    @editorView.getCursorView().css('left')
 
   updateHighlight: ->
     @css('width', @highlightWidth())
