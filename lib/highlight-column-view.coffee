@@ -13,10 +13,7 @@ class HighlightColumnView extends View
       if editorView.attached and editorView.getPane()
         editorView.underlayer.append(new HighlightColumnView(editorView))
 
-    atom.workspaceView.command 'highlight-column:toggle-highlight', '.editor', =>
-      @toggleHighlight()
-
-  @toggleHighlight: ->
+  @toggle: ->
     current = atom.config.get('highlight-column.enableHighlight')
     atom.config.set('highlight-column.enableHighlight', not current)
 
@@ -29,6 +26,9 @@ class HighlightColumnView extends View
     @subscribe atom.config.observe 'highlight-column.enableHighlight', callNow: false, => @updateHighlight()
 
     @updateHighlight()
+
+    atom.workspaceView.command 'highlight-column:toggle', '.editor', =>
+      @toggle()
 
   highlightWidth: ->
     @editorView.charWidth

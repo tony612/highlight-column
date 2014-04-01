@@ -1,2 +1,0 @@
-'.editor':
-  'cmd-shift-c': 'highlight-column:toggle-highlight'

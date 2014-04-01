@@ -1,6 +1,10 @@
 # Highlight-column
 
-Toggle with `cmd-shift-c`
+You can config the shortkey to toggle the highlight, such as:
+
+	'.editor':
+
+ 	   'cmd-shift-c': 'highlight-column:toggle'
 
 Highlight column the cursor is at.
 
