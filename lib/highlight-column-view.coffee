@@ -21,6 +21,9 @@ class HighlightColumnView extends View
 
     @updateHighlight()
 
+    atom.workspaceView.command 'highlight-column:toggle', '.editor', =>
+      @toggle()
+
   highlightWidth: ->
     @editorView.charWidth
 
