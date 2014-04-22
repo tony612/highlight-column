@@ -8,7 +8,9 @@ class HighlightColumnView extends View
 
   @activate: ->
     opacity = atom.config.get('highlight-column.opacity')
+    isEnabled = atom.config.get('highlight-column.enableHighlight')
     atom.config.set('highlight-column.opacity', opacity || 0.15)
+    atom.config.set('highlight-column.enableHighlight', !!isEnabled)
     atom.workspaceView.eachEditorView (editorView) ->
       if editorView.attached and editorView.getPane()
         editorView.underlayer.append(new HighlightColumnView(editorView))
