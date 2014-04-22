@@ -13,10 +13,6 @@ class HighlightColumnView extends View
       if editorView.attached and editorView.getPane()
         editorView.underlayer.append(new HighlightColumnView(editorView))
 
-  @toggle: ->
-    current = atom.config.get('highlight-column.enableHighlight')
-    atom.config.set('highlight-column.enableHighlight', not current)
-
   @content: ->
     @div class: 'highlight-column'
 
@@ -36,10 +32,13 @@ class HighlightColumnView extends View
   cursorScreenLeft: ->
     @editorView.getCursorView().css('left')
 
+  opacity: ->
+    if atom.config.get('highlight-column.enableHighlight')
+      atom.config.get('highlight-column.opacity')
+    else
+       0
+
   updateHighlight: ->
     @css('width', @highlightWidth())
     @css('left', @cursorScreenLeft()).show()
-    if atom.config.get('highlight-column.enableHighlight')
-      @css('opacity', atom.config.get('highlight-column.opacity'))
-    else
-      @css('opacity', 0)
+    @css('opacity', @opacity())
