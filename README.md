@@ -2,7 +2,7 @@
 
 You can config the shortkey to toggle the highlight, such as:
 
-    '.editor':
+    '.editor:not(.mini)':
       'cmd-shift-c': 'highlight-column:toggle'
 
 Highlight column the cursor is at.
