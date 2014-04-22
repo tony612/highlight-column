@@ -8,9 +8,9 @@ class HighlightColumnView extends View
 
   @activate: ->
     opacity = atom.config.get('highlight-column.opacity')
-    isEnabled = atom.config.get('highlight-column.enableHighlight')
+    isEnable = atom.config.get('highlight-column.enableHighlight')
     atom.config.set('highlight-column.opacity', opacity || 0.15)
-    atom.config.set('highlight-column.enableHighlight', !!isEnabled)
+    atom.config.set('highlight-column.enableHighlight', !!isEnable)
     atom.workspaceView.eachEditorView (editorView) ->
       if editorView.attached and editorView.getPane()
         editorView.underlayer.append(new HighlightColumnView(editorView))
@@ -21,12 +21,12 @@ class HighlightColumnView extends View
   initialize: (@editorView) ->
     @subscribe @editorView, 'cursor:moved', => @updateHighlight()
     @subscribe atom.config.observe 'highlight-column.opacity', callNow: false, => @updateHighlight()
+
+    atom.workspaceView.command 'highlight-column:toggle', '.editor', =>
+      atom.config.toggle('highlight-column.enableHighlight')
     @subscribe atom.config.observe 'highlight-column.enableHighlight', callNow: false, => @updateHighlight()
 
     @updateHighlight()
-
-    atom.workspaceView.command 'highlight-column:toggle', '.editor', =>
-      @toggle()
 
   highlightWidth: ->
     @editorView.charWidth
@@ -38,7 +38,7 @@ class HighlightColumnView extends View
     if atom.config.get('highlight-column.enableHighlight')
       atom.config.get('highlight-column.opacity')
     else
-       0
+      0
 
   updateHighlight: ->
     @css('width', @highlightWidth())
