@@ -1,4 +1,4 @@
-# Highlight-column
+# Highlight-column [![Build Status](https://travis-ci.org/tony612/highlight-column.svg?branch=master)](https://travis-ci.org/tony612/highlight-column)
 
 You can config the shortkey to toggle the highlight, such as:
 
