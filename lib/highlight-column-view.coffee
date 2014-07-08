@@ -32,7 +32,10 @@ class HighlightColumnView extends View
     @editorView.charWidth
 
   cursorScreenLeft: ->
-    @editorView.getCursorView().css('left')
+    if @editorView.getCursorView?
+      @editorView.getCursorView().css('left')
+    else
+      @editorView.editor.getCursor().getPixelRect().left
 
   opacity: ->
     if atom.config.get('highlight-column.enableHighlight')
