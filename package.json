@@ -1,7 +1,7 @@
 {
   "name": "highlight-column",
   "main": "./lib/highlight-column-view",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "private": true,
   "description": "Highlight column the cursor is at",
   "repository": "https://github.com/tony612/highlight-column",
