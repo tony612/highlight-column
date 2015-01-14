@@ -1,49 +1,32 @@
-{$, View} = require 'atom'
-
 module.exports =
-class HighlightColumnView extends View
-  configDefaults:
-    opacity: "0.15"
-    enableHighlight: true
+class HighlightColumnView
+  constructor: (state) ->
+    @markers = {}
 
-  @activate: ->
-    opacity = atom.config.get('highlight-column.opacity')
-    isEnable = atom.config.get('highlight-column.enableHighlight')
-    atom.config.set('highlight-column.opacity', opacity || 0.15)
-    atom.config.set('highlight-column.enableHighlight', !!isEnable)
-    atom.workspaceView.eachEditorView (editorView) ->
-      if editorView.attached and editorView.getPane()
-        editorView.underlayer.append(new HighlightColumnView(editorView))
+  # Returns an object that can be retrieved when package is activated
+  serialize: ->
 
-  @content: ->
-    @div class: 'highlight-column'
+  # Tear down any state and detach
+  destroy: ->
+    for _, marker of @markers
+      marker.destroy()
+    @markers = {}
 
-  initialize: (@editorView) ->
-    @subscribe @editorView, 'cursor:moved', => @updateHighlight()
-    @subscribe atom.config.observe 'highlight-column.opacity', callNow: false, => @updateHighlight()
+  hide: ->
+    @destroy()
 
-    atom.workspaceView.command 'highlight-column:toggle', '.editor', =>
-      atom.config.toggle('highlight-column.enableHighlight')
-    @subscribe atom.config.observe 'highlight-column.enableHighlight', callNow: false, => @updateHighlight()
+  addHighlight: (cursor) ->
+    editor = cursor.editor
+    range = cursor.getScreenRange().copy()
+    marker = editor.markScreenRange(range, invalidate: "never")
+    decoration = editor.decorateMarker(marker, type: 'highlight', class: "highlight-column")
+    @markers[cursor.id] = marker
 
-    @updateHighlight()
+  updateMarker: (cursor) ->
+    marker = @markers[cursor.id]
+    range = cursor.getScreenRange().copy()
+    marker.setScreenRange(range)
 
-  highlightWidth: ->
-    @editorView.charWidth
-
-  cursorScreenLeft: ->
-    if @editorView.getCursorView?
-      @editorView.getCursorView().css('left')
-    else
-      @editorView.editor.getCursor().getPixelRect().left
-
-  opacity: ->
-    if atom.config.get('highlight-column.enableHighlight')
-      atom.config.get('highlight-column.opacity')
-    else
-      0
-
-  updateHighlight: ->
-    @css('width', @highlightWidth())
-    @css('left', @cursorScreenLeft()).show()
-    @css('opacity', @opacity())
+  destroyMarker: (cursor) ->
+    marker = @markers[cursor.id]
+    marker.destroy()

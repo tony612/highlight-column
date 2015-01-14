@@ -1,6 +1,6 @@
 {
   "name": "highlight-column",
-  "main": "./lib/highlight-column-view",
+  "main": "./lib/highlight-column",
   "version": "0.3.2",
   "private": true,
   "description": "Highlight column the cursor is at",

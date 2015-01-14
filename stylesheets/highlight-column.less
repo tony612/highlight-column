@@ -1,14 +1,17 @@
 @import "syntax-variables";
 
-.highlight-column {
-  height: 100%;
-  z-index: 100;
-  position: absolute;
-  top: 0;
-  background-color: @syntax-cursor-color;
-  // opacity: 0.15;
-  visibility: hidden;
-  .editor.is-focused & {
+atom-text-editor,
+atom-text-editor::shadow  {
+  .highlight-column .region {
+    height: 100% !important;
+    z-index: 100;
+    position: absolute;
+    top: 0 !important;
+    background-color: @syntax-cursor-color;
     visibility: visible;
+    opacity: 0.15;
+    .editor.is-focused & {
+      visibility: visible;
+    }
   }
 }
