@@ -6,11 +6,11 @@ describe "HighlightColumn", ->
       atom.packages.activatePackage('highlight-column')
       atom.workspace.open('sample.js')
 
-  # describe "defaultConfigs", ->
-  #   it "set default opacity to 0.15", ->
-  #     expect(atom.config.get('highlight-column.opacity')).toBe 0.15
+  describe "defaultConfigs", ->
+    it "set default opacity to 0.15", ->
+      expect(atom.config.get('highlight-column.opacity')).toBe 0.15
 
-  describe "@activate", ->
+  xdescribe "@activate", ->
     beforeEach ->
       @pane = atom.workspace.getActivePane()
       @editor = @pane.getActiveItem()
@@ -26,19 +26,9 @@ describe "HighlightColumn", ->
       expect(pane).not.toEqual(@pane)
       editor = pane.getActiveItem()
       view = atom.views.getView(editor)
-      console.log view
       expect($(".underlayer > .highlight-column", view).length).toBe 1
 
-  ddescribe "@highlightWidth", ->
-    it "equles char width", ->
-      expect(hlColumn.highlightWidth()).toBe(editorView.charWidth)
-
-  describe "@cursorScreenLeft", ->
-    it "calculates cursor's left positoin", ->
-      spyOn(editorView.getCursorView(), "css").andReturn(32)
-      expect(hlColumn.cursorScreenLeft()).toBe(32)
-
-  describe "@updateHighlight", ->
+  xdescribe "@updateHighlight", ->
     it "positions the highlight at the configured column", ->
       spyOn(hlColumn, "highlightWidth").andReturn(16)
       spyOn(hlColumn, "cursorScreenLeft").andReturn(32)
@@ -50,12 +40,9 @@ describe "HighlightColumn", ->
       atom.config.set('highlight-column.opacity', 0.3)
       expect(hlColumn.css('opacity')).toBeCloseTo(0.3, 2)
 
-  describe "@opacity", ->
+  xdescribe "@opacity", ->
     beforeEach ->
       atom.config.set('highlight-column.opacity', 0.3)
-
-    beforeEach ->
-      atom.config.set('highlight-column.enableHighlight', true)
 
     describe "when enable", ->
       it "returns config opacity", ->

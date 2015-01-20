@@ -5,11 +5,20 @@ HighlightColumnView = require './highlight-column-view'
 module.exports = HighlightColumn =
   subscriptions: null
   bindings: null
-  enabled: true
+
+  config:
+    opacity:
+      type: 'number'
+      default: 0.15
+      minimum: 0
+      maximum: 1
+
+  opacity: -> atom.config.get('highlight-column.opacity')
 
   activate: (state) ->
     @hlViews = {}
     @paneBindings = {}
+    @enabled = true
 
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
     @subscriptions = new CompositeDisposable
@@ -17,6 +26,10 @@ module.exports = HighlightColumn =
 
     # Register command that toggles this view
     @subscriptions.add atom.commands.add 'atom-workspace', 'highlight-column:toggle': => @toggle()
+    @subscriptions.add atom.config.observe 'highlight-column.opacity', (newValue) =>
+      for id, view of @hlViews
+        view.updateOpacity(@opacity) if view
+
 
     @bindHighlights()
 
@@ -26,13 +39,12 @@ module.exports = HighlightColumn =
     bindings.dispose() for _, bindings of @paneBindings
 
   toggle: ->
-    if @enabled
-      @clearBindings()
-
-      @bindings.dispose()
-    else
-      @bindHighlights()
     @enabled = !@enabled
+    if @enabled
+      @bindHighlights()
+    else
+      @clearBindings()
+      @bindings.dispose()
 
   clearBindings: ->
     for id, view of @hlViews
@@ -60,15 +72,17 @@ module.exports = HighlightColumn =
         rect
 
       paneBindings.add editor.observeCursors (cursor) =>
+        return unless @enabled
         hlColumnView = new HighlightColumnView
         $('.underlayer', editorElement).append(hlColumnView)
-        hlColumnView.update(getCursorRect(cursor))
+        hlColumnView.update(getCursorRect(cursor), @opacity)
         @hlViews[cursor.id] = hlColumnView
 
       paneBindings.add editor.onDidChangeCursorPosition (event) =>
+        return unless @enabled
         cursor = event.cursor
         hlColumnView = @hlViews[cursor.id]
-        hlColumnView.update(getCursorRect(event.cursor)) if hlColumnView
+        hlColumnView.update(getCursorRect(event.cursor), @opacity) if hlColumnView
 
       paneBindings.add editor.onDidRemoveCursor (cursor) =>
         hlColumnView = @hlViews[cursor.id]
