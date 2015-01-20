@@ -1,5 +1,5 @@
 HighlightColumnView = require './highlight-column-view'
-{CompositeDisposable} = require 'atom'
+{CompositeDisposable, TextEditor} = require 'atom'
 {$} = require 'space-pen'
 
 module.exports = HighlightColumn =
@@ -9,6 +9,7 @@ module.exports = HighlightColumn =
 
   activate: (state) ->
     @hlViews = {}
+    @paneBindings = {}
 
     # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
     @subscriptions = new CompositeDisposable
@@ -22,38 +23,60 @@ module.exports = HighlightColumn =
   deactivate: ->
     @subscriptions.dispose()
     @bindings.dispose()
-
-  serialize: ->
-    highlightColumnViewState: @hlColumnView.serialize()
+    bindings.dispose() for _, bindings of @paneBindings
 
   toggle: ->
     if @enabled
+      @clearBindings()
+
       @bindings.dispose()
-      @hlColumnView.hide()
     else
       @bindHighlights()
     @enabled = !@enabled
 
+  clearBindings: ->
+    for id, view of @hlViews
+      @hlViews[id].remove()
+      delete @hlViews[id]
+
+    for id, bindings of @paneBindings
+      @paneBindings[id].dispose()
+      delete @paneBindings[id]
+
   bindHighlights: ->
-    @bindings.add atom.workspace.observeTextEditors (editor) =>
+
+    @bindings.add atom.workspace.observeActivePaneItem (editor) =>
+      return unless editor && editor instanceof TextEditor
+
+      @clearBindings()
+
       editorElement = atom.views.getView(editor)
+
+      paneBindings = new CompositeDisposable()
 
       getCursorRect = (cursor) ->
         rect = cursor.getPixelRect()
         rect.width = editor.getDefaultCharWidth() if !rect.width or rect.width is 0
         rect
 
-      @bindings.add editor.observeCursors (cursor) =>
+      paneBindings.add editor.observeCursors (cursor) =>
         hlColumnView = new HighlightColumnView
         $('.underlayer', editorElement).append(hlColumnView)
         hlColumnView.update(getCursorRect(cursor))
         @hlViews[cursor.id] = hlColumnView
 
-      @bindings.add editor.onDidChangeCursorPosition (event) =>
+      paneBindings.add editor.onDidChangeCursorPosition (event) =>
         cursor = event.cursor
         hlColumnView = @hlViews[cursor.id]
-        hlColumnView.update(getCursorRect(event.cursor))
+        hlColumnView.update(getCursorRect(event.cursor)) if hlColumnView
 
-      @bindings.add editor.onDidRemoveCursor (cursor) =>
+      paneBindings.add editor.onDidRemoveCursor (cursor) =>
         hlColumnView = @hlViews[cursor.id]
         hlColumnView.remove()
+
+      @paneBindings[editor.id] = paneBindings
+
+    @bindings.add atom.workspace.onWillDestroyPaneItem (event) =>
+      editor = event.item
+      return unless editor && editor instanceof TextEditor
+      @clearBindings()
