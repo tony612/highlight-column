@@ -6,7 +6,7 @@
   "repository": "https://github.com/tony612/highlight-column",
   "license": "MIT",
   "engines": {
-    "atom": ">=0.x.0, <2.0.0"
+    "atom": ">0.151.0"
   },
   "dependencies": {
     "space-pen": "^5.0.1"
