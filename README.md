@@ -1,5 +1,11 @@
 # Highlight-column [![Build Status](https://travis-ci.org/tony612/highlight-column.svg?branch=master)](https://travis-ci.org/tony612/highlight-column)
 
+Install it with `apm` command
+```
+apm install highlight-column
+```
+or from *Settings*
+
 Highlight column the cursor is at.
 
 ![Screenshot with dark theme](https://f.cloud.github.com/assets/1253659/2365736/b60c9b90-a6da-11e3-8081-fc8753783435.png)
