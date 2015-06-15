@@ -1,14 +1,17 @@
-{View} = require 'space-pen'
-
-module.exports =
-class HighlightColumnView extends View
-  @content: ->
-    @div class: 'highlight-column'
+class HighlightColumnView extends HTMLDivElement
+  initialize: ()->
+    @classList.add('highlight-column')
+    this
 
   update: (rect, opacity = 0.15) ->
-    @css('left', rect.left)
-    @css('width', rect.width)
+    @style.left = "#{rect.left}px"
+    @style.width = "#{rect.width}px"
     @updateOpacity(opacity)
 
   updateOpacity: (opacity) ->
-    @css('opacity', opacity)
+    @style.opacity = opacity
+
+module.exports = document.registerElement('highlight-column',
+  extends: 'div'
+  prototype: HighlightColumnView.prototype
+)

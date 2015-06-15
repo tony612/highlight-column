@@ -1,6 +1,5 @@
 HighlightColumnView = require './highlight-column-view'
 {CompositeDisposable, TextEditor} = require 'atom'
-{$} = require 'space-pen'
 
 module.exports = HighlightColumn =
   subscriptions: null
@@ -73,8 +72,9 @@ module.exports = HighlightColumn =
 
       paneBindings.add editor.observeCursors (cursor) =>
         return unless @enabled
-        hlColumnView = new HighlightColumnView
-        $('.underlayer', editorElement).append(hlColumnView)
+        hlColumnView = new HighlightColumnView().initialize()
+        lines = editorElement.rootElement?.querySelector?('.lines')
+        lines?.appendChild(hlColumnView)
         hlColumnView.update(getCursorRect(cursor), @opacity)
         @hlViews[cursor.id] = hlColumnView
 
