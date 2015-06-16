@@ -75,14 +75,28 @@ module.exports = HighlightColumn =
         hlColumnView = new HighlightColumnView().initialize()
         lines = editorElement.rootElement?.querySelector?('.lines')
         lines?.appendChild(hlColumnView)
-        hlColumnView.update(getCursorRect(cursor), @opacity)
+
+        offset = 0
+
+        if editorElement.hasTiledRendering
+          offset = editor.getScrollLeft()
+          paneBindings.add editor.onDidChangeScrollLeft =>
+            offset = editor.getScrollLeft()
+            hlColumnView.update(getCursorRect(cursor), @opacity, offset)
+
+        hlColumnView.update(getCursorRect(cursor), @opacity, offset)
         @hlViews[cursor.id] = hlColumnView
 
       paneBindings.add editor.onDidChangeCursorPosition (event) =>
         return unless @enabled
         cursor = event.cursor
         hlColumnView = @hlViews[cursor.id]
-        hlColumnView.update(getCursorRect(event.cursor), @opacity) if hlColumnView
+
+        offset = 0
+        if editorElement.hasTiledRendering
+          offset = editor.getScrollLeft()
+
+        hlColumnView.update(getCursorRect(event.cursor), @opacity, offset) if hlColumnView
 
       paneBindings.add editor.onDidRemoveCursor (cursor) =>
         hlColumnView = @hlViews[cursor.id]

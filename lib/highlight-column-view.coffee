@@ -3,8 +3,8 @@ class HighlightColumnView extends HTMLDivElement
     @classList.add('highlight-column')
     this
 
-  update: (rect, opacity = 0.15) ->
-    @style.left = "#{rect.left}px"
+  update: (rect, opacity = 0.15, offset = 0) ->
+    @style.left = "#{rect.left - offset}px"
     @style.width = "#{rect.width}px"
     @updateOpacity(opacity)
 
