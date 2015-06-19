@@ -1,55 +1,62 @@
-{$} = require 'space-pen'
-
 describe "HighlightColumn", ->
+  [editor, editorElement, highlight, workspaceElement] = []
+
+  getLeftPosition = (element) ->
+    parseInt(element.style.left)
+
+  getWidth = (element) ->
+    parseInt(element.style.width)
+
   beforeEach ->
+    workspaceElement = atom.views.getView(atom.workspace)
+    workspaceElement.style.height = "400px"
+    workspaceElement.style.width = "600px"
+
+    jasmine.attachToDOM(workspaceElement)
+
     waitsForPromise ->
       atom.packages.activatePackage('highlight-column')
+
+    waitsForPromise ->
       atom.workspace.open('sample.js')
 
-  describe "defaultConfigs", ->
-    it "set default opacity to 0.15", ->
-      expect(atom.config.get('highlight-column.opacity')).toBe 0.15
+    runs ->
+      editor = atom.workspace.getActiveTextEditor()
+      editorElement = atom.views.getView(editor)
+      highlight = editorElement.rootElement.querySelector(".highlight-column")
 
-  xdescribe "@activate", ->
-    beforeEach ->
-      @pane = atom.workspace.getActivePane()
-      @editor = @pane.getActiveItem()
+  describe ".activate", ->
+    getHighlights  = ->
+      highlights = []
+      atom.workspace.getTextEditors().forEach (editor) ->
+        highlight = atom.views.getView(editor).rootElement.querySelectorAll(".highlight-column")
+        Array::push.apply highlights, highlight if highlight
+      highlights
 
-    it "appends self to each editorView's underlayer", ->
-      view = atom.views.getView(@editor)
-      console.log view
-      expect($(".underlayer > .highlight-column", view).length).toBe 1
+    it "appends a highlight to all existing and new editors", ->
+      expect(atom.workspace.getPanes().length).toBe 1
+      expect(getHighlights().length).toBe 1
+      expect(getWidth(getHighlights()[0])).toBeGreaterThan(0)
 
-    it "create append to new pane when spliting", ->
-      @pane.splitLeft(copyActiveItem: true)
-      pane = atom.workspace.getActivePane()
-      expect(pane).not.toEqual(@pane)
-      editor = pane.getActiveItem()
-      view = atom.views.getView(editor)
-      expect($(".underlayer > .highlight-column", view).length).toBe 1
+      atom.workspace.getActivePane().splitRight(copyActiveItem: true)
+      expect(atom.workspace.getPanes().length).toBe 2
+      expect(getHighlights().length).toBe 2
+      expect(getWidth(getHighlights()[0])).toBeGreaterThan(0)
+      expect(getWidth(getHighlights()[1])).toBeGreaterThan(0)
 
-  xdescribe "@updateHighlight", ->
-    it "positions the highlight at the configured column", ->
-      spyOn(hlColumn, "highlightWidth").andReturn(16)
-      spyOn(hlColumn, "cursorScreenLeft").andReturn(32)
-      editorView.trigger("cursor:moved")
-      expect(hlColumn.width()).toBe(16)
-      expect(hlColumn.position().left).toBe(32)
+    it "width of the highlight is right", ->
+      width = editor.getDefaultCharWidth()
+      expect(width).toBeGreaterThan(0)
+      expect(getWidth(highlight)).toBe(width)
+      expect(highlight).toBeVisible()
 
-    it "change opacity when the config changes", ->
-      atom.config.set('highlight-column.opacity', 0.3)
-      expect(hlColumn.css('opacity')).toBeCloseTo(0.3, 2)
+    it "appends highlights to where cursors are", ->
+      editor.setText("abc")
+      expect(editor.getCursors().length).toBe 1
+      expect(getHighlights().length).toBe 1
 
-  xdescribe "@opacity", ->
-    beforeEach ->
-      atom.config.set('highlight-column.opacity', 0.3)
-
-    describe "when enable", ->
-      it "returns config opacity", ->
-        expect(hlColumn.opacity()).toBeCloseTo(0.3, 2)
-
-    describe "when disable", ->
-      it "returns 0", ->
-        atom.config.set('highlight-column.opacity', 0.3)
-        atom.config.set('highlight-column.enableHighlight', false)
-        expect(hlColumn.opacity()).toBe(0)
+      editor.addCursorAtScreenPosition([0, 1])
+      expect(editor.getCursors().length).toBe 2
+      expect(getHighlights().length).toBe 2
+      expect(getLeftPosition(getHighlights()[0])).toBeGreaterThan(0)
+      expect(getLeftPosition(getHighlights()[1])).toBeGreaterThan(0)
