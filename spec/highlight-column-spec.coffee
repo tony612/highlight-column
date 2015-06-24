@@ -60,3 +60,24 @@ describe "HighlightColumn", ->
       expect(getHighlights().length).toBe 2
       expect(getLeftPosition(getHighlights()[0])).toBeGreaterThan(0)
       expect(getLeftPosition(getHighlights()[1])).toBeGreaterThan(0)
+
+  describe "cursor moves", ->
+    it "highlight moves", ->
+      editor.setText("abc")
+
+      editor.moveToBeginningOfLine()
+      expect(getLeftPosition(highlight)).toEqual(0)
+
+      editor.moveRight()
+      expect(getLeftPosition(highlight)).toBeGreaterThan(0)
+
+  describe "fontsize changes", ->
+    it "highlight width changes", ->
+      initial = getWidth(highlight)
+      expect(initial).toBeGreaterThan(0)
+      fontSize = atom.config.get("editor.fontSize")
+      atom.config.set("editor.fontSize", fontSize + 10)
+
+      advanceClock(1)
+      expect(getWidth(highlight)).toBeGreaterThan(initial)
+      expect(highlight).toBeVisible()
