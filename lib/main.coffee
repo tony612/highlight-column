@@ -10,6 +10,10 @@ module.exports = HighlightColumn =
     enabled:
       type: 'boolean'
       default: true
+    lineMode:
+      type: 'boolean'
+      default: false
+
 
   activate: ->
     atom.commands.add 'atom-workspace', 'highlight-column:toggle', =>

@@ -44,13 +44,16 @@ class HighlightColumnView extends HTMLDivElement
     subscriptions = new CompositeDisposable
     subscriptions.add atom.config.observe('highlight-column.opacity', updateHighlightCallback)
     subscriptions.add atom.config.observe('highlight-column.enabled', updateHighlightCallback)
+    subscriptions.add atom.config.observe('highlight-column.lineMode', updateHighlightCallback)
     subscriptions
 
   updateHighlight: ->
     if @isEnabled()
       rect = @highlightRect()
+      width = rect.width
+      width = 1 if @isLineMode()
       @style.left = "#{rect.left}px"
-      @style.width = "#{rect.width}px"
+      @style.width = "#{width}px"
       @style.opacity = @opacity()
       @style.display = 'block'
     else
@@ -58,7 +61,13 @@ class HighlightColumnView extends HTMLDivElement
 
   isEnabled: -> atom.config.get('highlight-column.enabled') ? true
 
-  opacity: -> atom.config.get('highlight-column.opacity') ? 0.15
+  isLineMode: -> atom.config.get('highlight-column.lineMode')
+
+  opacity: ->
+    if @isLineMode()
+      0.3
+    else
+      atom.config.get('highlight-column.opacity') ? 0.15
 
   highlightRect: ->
     rect = @cursor.getPixelRect()
