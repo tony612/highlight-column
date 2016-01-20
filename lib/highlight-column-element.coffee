@@ -1,4 +1,4 @@
-{CompositeDisposable} = require 'atom'
+{CompositeDisposable, Point, Range} = require 'atom'
 
 class HighlightColumnView extends HTMLDivElement
   initialize: (@editor, @editorElement, @cursor)->
@@ -23,9 +23,11 @@ class HighlightColumnView extends HTMLDivElement
 
     # FIXME: remove conditional as soon as the tiled editor is released.
     if @editorElement.hasTiledRendering
-      subscriptions.add @editor.onDidChangeScrollLeft(updateHighlightCallback)
+      subscriptions.add @editorElement.onDidChangeScrollLeft(updateHighlightCallback)
 
-    subscriptions.add @cursor.onDidChangePosition(updateHighlightCallback)
+    cursorChanged = =>
+      @updateHighlight()
+    subscriptions.add @cursor.onDidChangePosition(cursorChanged)
 
     subscriptions.add @editorElement.onDidAttach =>
       @attachToLines()
@@ -70,12 +72,21 @@ class HighlightColumnView extends HTMLDivElement
       atom.config.get('highlight-column.opacity') ? 0.15
 
   highlightRect: ->
-    rect = @cursor.getPixelRect()
+    rect = @_cursorPixelRect()
     rect.width = @editor.getDefaultCharWidth() if !rect.width or rect.width is 0
+
     # FIXME: remove conditional as soon as the tiled editor is released.
-    rect.left -= @editor.getScrollLeft() if @editorElement.hasTiledRendering
+    rect.left -= @editorElement.getScrollLeft() if @editorElement.hasTiledRendering
     rect
 
+  _cursorPixelRect: ->
+    {row, column} = @cursor.getScreenPosition()
+    screenRange = new Range(new Point(row, column), new Point(row, column + 1))
+    rect = @editorElement.pixelRectForScreenRange(screenRange)
+    range = @editorElement.pixelRangeForScreenRange(screenRange)
+    rect.left = range.start.left
+    rect.right = range.end.left
+    rect
 
 module.exports = document.registerElement('highlight-column',
   extends: 'div'
