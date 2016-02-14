@@ -45,9 +45,7 @@ describe "HighlightColumn", ->
       expect(getWidth(getHighlights()[1])).toBeGreaterThan(0)
 
     it "width of the highlight is right", ->
-      width = editor.getDefaultCharWidth()
-      expect(width).toBeGreaterThan(0)
-      expect(getWidth(highlight)).toBe(width)
+      expect(getWidth(highlight)).toBeGreaterThan(0)
       expect(highlight).toBeVisible()
 
     it "appends highlights to where cursors are", ->
