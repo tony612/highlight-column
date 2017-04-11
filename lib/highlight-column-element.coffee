@@ -67,7 +67,7 @@ class HighlightColumnView extends HTMLDivElement
 
   opacity: ->
     if @isLineMode()
-      0.3
+      atom.config.get('highlight-column.opacity') ? 0.15
     else
       atom.config.get('highlight-column.opacity') ? 0.15
 
