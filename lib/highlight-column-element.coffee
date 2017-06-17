@@ -9,8 +9,8 @@ class HighlightColumnView extends HTMLDivElement
     this
 
   attachToLines: ->
-    scrollView = @editorElement.querySelector('.lines')
-    scrollView?.appendChild(@element)
+    lines = @editorElement.querySelector('.lines')
+    lines?.appendChild(@)
 
   handleEvents: ->
     updateHighlightCallback = => @updateHighlight()
