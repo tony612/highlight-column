@@ -23,13 +23,13 @@ describe "HighlightColumn", ->
     runs ->
       editor = atom.workspace.getActiveTextEditor()
       editorElement = atom.views.getView(editor)
-      highlight = editorElement.rootElement.querySelector(".highlight-column")
+      highlight = editorElement.querySelector(".highlight-column")
 
   describe ".activate", ->
     getHighlights  = ->
       highlights = []
       atom.workspace.getTextEditors().forEach (editor) ->
-        highlight = atom.views.getView(editor).rootElement.querySelectorAll(".highlight-column")
+        highlight = atom.views.getView(editor).querySelectorAll(".highlight-column")
         Array::push.apply highlights, highlight if highlight
       highlights
 

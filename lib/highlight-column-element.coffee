@@ -52,13 +52,14 @@ class HighlightColumnView extends HTMLDivElement
   updateHighlight: ->
     if @isEnabled()
       rect = @highlightRect()
-      if rect
-          width = rect.width
-          width = 1 if @isLineMode()
-          @style.left = "#{rect.left}px"
-          @style.width = "#{width}px"
-          @style.opacity = @opacity()
-          @style.display = 'block'
+      return if !rect
+
+      width = rect.width
+      width = 1 if @isLineMode()
+      @style.left = "#{rect.left}px"
+      @style.width = "#{width}px"
+      @style.opacity = @opacity()
+      @style.display = 'block'
     else
       @style.display = 'none'
 
@@ -74,30 +75,27 @@ class HighlightColumnView extends HTMLDivElement
 
   highlightRect: ->
     rect = @_cursorPixelRect()
-    if rect
-        rect.width = @editor.getDefaultCharWidth() if !rect.width or rect.width is 0
+    return if !rect
 
-        # FIXME: remove conditional as soon as the tiled editor is released.
-        rect.left -= @editorElement.getScrollLeft() if @editorElement.hasTiledRendering
-        rect
+    rect.width = @editor.getDefaultCharWidth() if !rect.width or rect.width is 0
+    # FIXME: remove conditional as soon as the tiled editor is released.
+    rect.left -= @editorElement.getScrollLeft() if @editorElement.hasTiledRendering
+    rect
 
   _cursorPixelRect: ->
     {row, column} = @cursor.getScreenPosition()
     screenRange = new Range(new Point(row, column), new Point(row, column + 1))
-    if  @editorElement.component != null
-        try
-            rect = @editorElement.pixelRectForScreenRange(screenRange)
-            range = @editorElement.pixelRangeForScreenRange(screenRange)
-        catch error
-            console.error error
+    return if @editorElement.component == null
 
-        if !rect or !range
-            rect = null
-        else
-            rect.left = range.start.left
-            rect.right = range.end.left
-    else
-        rect = null
+    try
+      rect = @editorElement.pixelRectForScreenRange(screenRange)
+      range = @editorElement.pixelRangeForScreenRange(screenRange)
+    catch error
+      console.error error
+
+    return if !rect or !range
+    rect.left = range.start.left
+    rect.right = range.end.left
     rect
 
 module.exports = document.registerElement('highlight-column',
